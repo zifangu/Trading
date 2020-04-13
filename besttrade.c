@@ -84,35 +84,57 @@ struct Trade trade_dc(int *price, int n) {
 //        result.profit = 0;
 
     if (n == 1) {
-        return result ;
+        result.buy_day_nbr = 1;
+        result.sell_day_nbr = 1;
+        result.profit = 0;
+        return result;
     }
+    //printf("%s%i%s", "length: ", length, "\n");
 
-    int length = n / 2;
-    printf("%s%i%s", "length: ", length, "\n");
-    int *former = malloc(length * sizeof(int));
-    int *latter = malloc(length * sizeof(int));
-    for (int i = 0; i < length; i++) {
-        printf("%s%i%s", "price: ", price[i], "\n");
-        former[i] = price[i];
-        latter[i] = price[length + i];
-        printf("%s%i%s", "former: ", former[i], "\n");
-        printf("%s%i%s", "latter: ", latter[i], "\n");
-    }
+    int length = n/2;            // about half
+    int *former = price;       // has m elements
+    int *latter = price + length;
+
     int maximum;
+    int buy;
+    int sell;
     int case3 = latter[max_price_day_nbr(latter, length)] - former[min_price_day_nbr(former, length)];
+
+    //          1                                   2                                       1                        3
     if ((trade_dc(former, length).profit > trade_dc(latter, length).profit) && (trade_dc(former, length).profit > case3)) {
-        maximum = trade_dc(former, length).profit;
-    } else if (trade_dc(former, length).profit > case3) {maximum = trade_dc(latter, length).profit;}
-    else {maximum = case3;}
+        buy = min_price_day_nbr(former,length);
+        sell = max_price_day_nbr(former,length);
+        maximum = trade_dc(former,length).profit;
 
 
+//        printf("%s%d", "buy1: ", buy);
+//        printf("%s%d", " sell1: ", sell);
+//        printf("%s%d", " profit1: ", maximum);
 
+//        printf("\n");
+        //              2                             3
+    } else if (trade_dc(latter,length).profit > case3) {
+        buy = min_price_day_nbr(latter,length);
+        sell = max_price_day_nbr(latter,length);
+        maximum = trade_dc(latter, length).profit;
 
+//        printf("%s%d", "buy2: ", buy);
+//        printf("%s%d", " sell2: ", sell);
+//        printf("%s%d", " profit2: ", maximum);
+//        printf("\n");
+    } else {
+        buy = min_price_day_nbr(former, length);
+        sell = max_price_day_nbr(latter, length);
+        maximum = case3;
 
+//        printf("%s%d", "buy3: ", buy);
+//        printf("%s%d", " sell3: ", sell);
+//        printf("%s%d", " profit3: ", maximum);
+//        printf("\n");
+    }
 
-
-    result.buy_day_nbr = former[min_price_day_nbr(former, length)];
-    result.sell_day_nbr = latter[max_price_day_nbr(latter, length)];
+    result.buy_day_nbr = buy;
+    result.sell_day_nbr = sell;
     result.profit = maximum;
     return result;
 }
