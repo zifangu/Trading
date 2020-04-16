@@ -1,6 +1,6 @@
-//
+
 // Starter code provided by David Sykes. All four functions have stubs
-// Code completed by _____________
+// Code completed by the ethereal Bennett Joyce and the polymath Ivan Gu
 //
 
 #include <stdio.h>
@@ -22,14 +22,14 @@
 
 
 static int max_price_day_nbr(int *price, int n);
-    // Return the index of the largest value in array a.
+// Return the index of the largest value in array a.
 
 
 static int min_price_day_nbr(int *price, int n);
-    // Find the index of the minimum value in an array
+// Find the index of the minimum value in an array
 
 void print_prices(int *price, int n);
-    // Print an array containing prices
+// Print an array containing prices
 
 
 static void print_array(int *a, int n);
@@ -47,10 +47,8 @@ struct Trade trade_bf(int *price, int n) {
     int sell_index = n;
     int best_profit = price[sell_index] - price[buy_index];
 
-    // TODO -- replace stub code
-
-    for (int i = 1; i < n-1; i++) {
-        for (int j = i+1; j < n; j++) {
+    for (int i = 1; i < n ; i++) {
+        for (int j = i+1; j <= n; j++) {
             int temp = price[j] - price[i];
             if (temp > best_profit) {
                 best_profit = temp;
@@ -67,21 +65,19 @@ struct Trade trade_bf(int *price, int n) {
 }
 
 
-// function  trade(prices)
-//    if  prices.length = 1
-//        return  0
+// function  trade(prices)
+//    if  prices.length = 1
+//        return  0
 //    former ← prices.first_half
 //    latter ← prices.last_half
 //    case3 ← max(latter) - min(former)
-//    return  max(trade(former), trade(latter), case3)
+//    return  max(trade(former), trade(latter), case3)
 
 struct Trade trade_dc(int *price, int n) {
     assert(price && n > 0);  // Check precondition
 
     struct Trade result;
-//        result.buy_day_nbr = 1;
-//        result.sell_day_nbr = 1;
-//        result.profit = 0;
+
 
     if (n == 1) {
         result.buy_day_nbr = 1;
@@ -91,73 +87,56 @@ struct Trade trade_dc(int *price, int n) {
     }
     //printf("%s%i%s", "length: ", length, "\n");
 
-    int length = n/2;            // about half
+    int length = n/2;
+    int latter_length = n - length;// about half
     int *former = price;       // has m elements
     int *latter = price + length;
 
-    int maximum;
-    int buy;
-    int sell;
-    int case3 = latter[max_price_day_nbr(latter, length)] - former[min_price_day_nbr(former, length)];
+    //int maximum;
+    struct Trade case3;
+    case3.profit = latter[max_price_day_nbr(latter, latter_length)] - former[min_price_day_nbr(former, length)];
+    case3.buy_day_nbr = min_price_day_nbr(former, length);
+    case3.sell_day_nbr = max_price_day_nbr(latter, latter_length) + length;
 
-    //          1                                   2                                       1                        3
-    if ((trade_dc(former, length).profit > trade_dc(latter, length).profit) && (trade_dc(former, length).profit > case3)) {
-        buy = min_price_day_nbr(former,length);
-        sell = max_price_day_nbr(former,length);
-        maximum = trade_dc(former,length).profit;
-
-
-//        printf("%s%d", "buy1: ", buy);
-//        printf("%s%d", " sell1: ", sell);
-//        printf("%s%d", " profit1: ", maximum);
-
-//        printf("\n");
+    struct Trade maximum_former = trade_dc(former, length);
+    struct Trade maximum_latter = trade_dc(latter,latter_length);
+    //          1                                   2               1                        3
+    if ((maximum_former.profit >maximum_latter.profit) && (maximum_former.profit > case3.profit)) {
+        result.profit = maximum_former.profit;
+        result.sell_day_nbr = max_price_day_nbr(former, length);
+        result.buy_day_nbr = min_price_day_nbr(former, length);
         //              2                             3
-    } else if (trade_dc(latter,length).profit > case3) {
-        buy = min_price_day_nbr(latter,length);
-        sell = max_price_day_nbr(latter,length);
-        maximum = trade_dc(latter, length).profit;
+    } else if (maximum_latter.profit > case3.profit) {
+        result.profit = maximum_latter.profit;
+        result.sell_day_nbr = max_price_day_nbr(latter, latter_length)+ length;
+        result.buy_day_nbr = min_price_day_nbr(latter, latter_length) + length;
 
-//        printf("%s%d", "buy2: ", buy);
-//        printf("%s%d", " sell2: ", sell);
-//        printf("%s%d", " profit2: ", maximum);
-//        printf("\n");
-    } else {
-        buy = min_price_day_nbr(former, length);
-        sell = max_price_day_nbr(latter, length);
-        maximum = case3;
+    } else { result = case3; }
 
-//        printf("%s%d", "buy3: ", buy);
-//        printf("%s%d", " sell3: ", sell);
-//        printf("%s%d", " profit3: ", maximum);
-//        printf("\n");
-    }
-
-    result.buy_day_nbr = buy;
-    result.sell_day_nbr = sell;
-    result.profit = maximum;
+    // print_prices(price,n);
+    // printf("%s","\n");
     return result;
 }
 
 
 
-//function  trade_dp(P)
+//function  trade_dp(P)
 //    B[1] ← 1
 //    sell_day ← 1
 //    best_profit ← 0
-//     
-//    for each n from 2 to P.length
-//        if  P[n] < P[B[n-1]]
+//
+//    for each n from 2 to P.length
+//        if  P[n] < P[B[n-1]]
 //            B[n] ← n
 //        else
 //            B[n] ← B[n-1]
-//     
+//
 //        profit ← P[n] - P[B[n]]
-//        if  profit > best_profit
+//        if  profit > best_profit
 //            sell_day ← n
 //            best_profit ← profit
-//     
-//    return  (sell_day, B[sell_day])
+//
+//    return  (sell_day, B[sell_day])
 
 struct Trade trade_dp(int *price, int n) {
     // Dynamic programming algorithm
@@ -187,10 +166,10 @@ struct Trade trade_dp(int *price, int n) {
         }
     }
 
-        result.buy_day_nbr = best_day[sell_index];
-        result.sell_day_nbr = sell_index;
-        result.profit = best_profit;
-        return result;
+    result.buy_day_nbr = best_day[sell_index];
+    result.sell_day_nbr = sell_index;
+    result.profit = best_profit;
+    return result;
 }
 
 /*
@@ -199,17 +178,15 @@ struct Trade trade_dp(int *price, int n) {
         buy_day ← 1
         B ← 1
         best_profit ← 0
-
-        for each  s from 2 to prices.length
-            if  prices[s] < prices[buy_day]
+        for each  s from 2 to prices.length
+            if  prices[s] < prices[buy_day]
                 B ← s
             profit ← prices[s] - prices[B]
-            if  profit ≥ best_profit
+            if  profit ≥ best_profit
                 sell_day ← s
                 buy_day ← B
                 best_profit ← profit
-        return  (sell_day, buy_day)
-
+        return  (sell_day, buy_day)
 Excerpt From: Wladston Ferreira Filho. “Computer Science Distilled.” Apple Books.
  *
  */
@@ -225,16 +202,18 @@ struct Trade trade_kadane(int *price, int n) {
     int B = 1;
     int best_profit = 0;
 
-    // TODO -- replace stub code
-    for (int i = 2; i < n; i++) {
+
+    for (int i = 2; i <= n ; i++) {
         if (price[i] < price[buy_index]) {
             B = i;
+            // buy_index = i;
         }
-        int temp = price[i] - price[B];
-        if (temp > best_profit) {
+
+        int profit = price[i] - price[B];
+        if (profit >= best_profit) {
             sell_index = i;
             buy_index = B;
-            best_profit = temp;
+            best_profit = profit;
         }
     }
 
