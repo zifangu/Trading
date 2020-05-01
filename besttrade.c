@@ -1,6 +1,6 @@
 
 // Starter code provided by David Sykes. All four functions have stubs
-// Code completed by the ethereal Bennett Joyce and the polymath Ivan Gu
+// Code completed by Zifan(Ivan) Gu and Bennett Joyce
 //
 
 #include <stdio.h>
